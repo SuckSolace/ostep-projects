@@ -903,6 +903,23 @@ enum delta_result_type add_delta(conn *c, const char *key,
 }
 
 /*
+ * Does mul and div on a numeric item value.
+ */
+enum delta_result_type mul_delta(conn *c, const char *key,
+                                 const size_t nkey, bool mul,
+                                 const int64_t delta, char *buf,
+                                 uint64_t *cas) {
+    enum delta_result_type ret;
+    uint32_t hv;
+
+    hv = hash(key, nkey);
+    item_lock(hv);
+    ret = do_mul_delta(c, key, nkey, mul, delta, buf, cas, hv, NULL);
+    item_unlock(hv);
+    return ret;
+}
+
+/*
  * Stores an item in the cache (high level, obeys set/add/replace semantics)
  */
 enum store_item_type store_item(item *item, int comm, conn* c) {

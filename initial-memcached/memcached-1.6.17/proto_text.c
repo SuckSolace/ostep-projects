@@ -2110,6 +2110,54 @@ static void process_arithmetic_command(conn *c, token_t *tokens, const size_t nt
     }
 }
 
+static void process_divmul_command(conn *c, token_t *tokens, const size_t ntokens, const bool mul) {
+    char temp[INCR_MAX_STORAGE_LEN];
+    uint64_t delta;
+    char *key;
+    size_t nkey;
+
+    assert(c != NULL);
+
+    set_noreply_maybe(c, tokens, ntokens);
+
+    if (tokens[KEY_TOKEN].length > KEY_MAX_LENGTH) {
+        out_string(c, "CLIENT_ERROR bad command line format");
+        return;
+    }
+
+    key = tokens[KEY_TOKEN].value;
+    nkey = tokens[KEY_TOKEN].length;
+
+    if (!safe_strtoull(tokens[2].value, &delta)) {
+        out_string(c, "CLIENT_ERROR invalid numeric delta argument");
+        return;
+    }
+
+    switch(mul_delta(c, key, nkey, mul, delta, temp, NULL)) {
+    case OK:
+        out_string(c, temp);
+        break;
+    case NON_NUMERIC:
+        out_string(c, "CLIENT_ERROR cannot multiply or divide non-numeric value");
+        break;
+    case EOM:
+        out_of_memory(c, "SERVER_ERROR out of memory");
+        break;
+    case DELTA_ITEM_NOT_FOUND:
+        pthread_mutex_lock(&c->thread->stats.mutex);
+        if (mul) {
+            c->thread->stats.incr_misses++;
+        } else {
+            c->thread->stats.decr_misses++;
+        }
+        pthread_mutex_unlock(&c->thread->stats.mutex);
+
+        out_string(c, "NOT_FOUND");
+        break;
+    case DELTA_ITEM_CAS_MISMATCH:
+        break; /* Should never get here */
+    }
+}
 
 static void process_delete_command(conn *c, token_t *tokens, const size_t ntokens) {
     char *key;
@@ -2747,31 +2795,36 @@ void process_command_ascii(conn *c, char *command) {
 
     // Meta commands are all 2-char in length.
     char first = tokens[COMMAND_TOKEN].value[0];
-    if (first == 'm' && tokens[COMMAND_TOKEN].length == 2) {
-        switch (tokens[COMMAND_TOKEN].value[1]) {
-            case 'g':
-                process_mget_command(c, tokens, ntokens);
-                break;
-            case 's':
-                process_mset_command(c, tokens, ntokens);
-                break;
-            case 'd':
-                process_mdelete_command(c, tokens, ntokens);
-                break;
-            case 'n':
-                out_string(c, "MN");
-                // mn command forces immediate writeback flush.
-                conn_set_state(c, conn_mwrite);
-                break;
-            case 'a':
-                process_marithmetic_command(c, tokens, ntokens);
-                break;
-            case 'e':
-                process_meta_command(c, tokens, ntokens);
-                break;
-            default:
-                out_string(c, "ERROR");
-                break;
+    if (first == 'm') {
+        if (tokens[COMMAND_TOKEN].length == 2){
+            switch (tokens[COMMAND_TOKEN].value[1]) {
+                case 'g':
+                    process_mget_command(c, tokens, ntokens);
+                    break;
+                case 's':
+                    process_mset_command(c, tokens, ntokens);
+                    break;
+                case 'd':
+                    process_mdelete_command(c, tokens, ntokens);
+                    break;
+                case 'n':
+                    out_string(c, "MN");
+                    // mn command forces immediate writeback flush.
+                    conn_set_state(c, conn_mwrite);
+                    break;
+                case 'a':
+                    process_marithmetic_command(c, tokens, ntokens);
+                    break;
+                case 'e':
+                    process_meta_command(c, tokens, ntokens);
+                    break;
+                default:
+                    out_string(c, "ERROR");
+                    break;
+            }
+        }else {
+            WANT_TOKENS_OR(ntokens, 4, 5);
+            process_divmul_command(c, tokens, ntokens, 1);
         }
     } else if (first == 'g') {
         // Various get commands are very common.
@@ -2810,7 +2863,7 @@ void process_command_ascii(conn *c, char *command) {
         }
     } else if (first == 'a') {
         if ((strcmp(tokens[COMMAND_TOKEN].value, "add") == 0 && (comm = NREAD_ADD)) ||
-            (strcmp(tokens[COMMAND_TOKEN].value, "append") == 0 && (comm = NREAD_APPEND)) ) {
+                (strcmp(tokens[COMMAND_TOKEN].value, "append") == 0 && (comm = NREAD_APPEND)) ) {
 
             WANT_TOKENS_OR(ntokens, 6, 7);
             process_update_command(c, tokens, ntokens, comm, false);
@@ -2842,6 +2895,9 @@ void process_command_ascii(conn *c, char *command) {
 
             WANT_TOKENS(ntokens, 3, 5);
             process_delete_command(c, tokens, ntokens);
+        } else if (strcmp(tokens[COMMAND_TOKEN].value, "div") == 0){  //by psd math div
+            WANT_TOKENS_OR(ntokens, 4, 5);
+            process_divmul_command(c, tokens, ntokens, 0);
         } else if (strcmp(tokens[COMMAND_TOKEN].value, "decr") == 0) {
 
             WANT_TOKENS_OR(ntokens, 4, 5);
@@ -2863,8 +2919,8 @@ void process_command_ascii(conn *c, char *command) {
             out_string(c, "ERROR");
         }
     } else if (
-                (strcmp(tokens[COMMAND_TOKEN].value, "replace") == 0 && (comm = NREAD_REPLACE)) ||
-                (strcmp(tokens[COMMAND_TOKEN].value, "prepend") == 0 && (comm = NREAD_PREPEND)) ) {
+            (strcmp(tokens[COMMAND_TOKEN].value, "replace") == 0 && (comm = NREAD_REPLACE)) ||
+            (strcmp(tokens[COMMAND_TOKEN].value, "prepend") == 0 && (comm = NREAD_PREPEND)) ) {
 
         WANT_TOKENS_OR(ntokens, 6, 7);
         process_update_command(c, tokens, ntokens, comm, false);
@@ -2904,7 +2960,7 @@ void process_command_ascii(conn *c, char *command) {
         WANT_TOKENS_MIN(ntokens, 3);
         process_lru_command(c, tokens, ntokens);
 #ifdef MEMCACHED_DEBUG
-    // commands which exist only for testing the memcached's security protection
+        // commands which exist only for testing the memcached's security protection
     } else if (strcmp(tokens[COMMAND_TOKEN].value, "misbehave") == 0) {
         process_misbehave_command(c);
 #endif
