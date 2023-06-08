@@ -1,0 +1,54 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+CC	Makefile	/^CC = gcc$/;"	m
+LIST_FREE	list.h	35;"	d
+LIST_HEAD	list.h	/^    LIST_HEAD$/;"	e	enum:__anon1
+LIST_MALLOC	list.h	31;"	d
+LIST_TAIL	list.h	/^  , LIST_TAIL$/;"	e	enum:__anon1
+LIST_VERSION	list.h	19;"	d
+Malloc	common.h	8;"	d
+OBJS	Makefile	/^OBJS = $(SRCS:.c=.o)$/;"	m
+OPTS	Makefile	/^OPTS = -Wall -g$/;"	m
+SRCS	Makefile	/^SRCS = reverse.c list.c list_node.c list_iterator.c$/;"	m
+STR	list.h	24;"	d
+STR	list.h	27;"	d
+TARG	Makefile	/^TARG = reverse$/;"	m
+Time_GetSeconds	common.h	9;"	d
+_STR	list.h	23;"	d
+_STR	list.h	26;"	d
+__CLIBS_LIST_H__	list.h	9;"	d
+__common_h__	common.h	2;"	d
+direction	list.h	/^  list_direction_t direction;$/;"	m	struct:__anon3
+free	list.h	/^  void (*free)(void *val);$/;"	m	struct:__anon2
+head	list.h	/^  list_node_t *head;$/;"	m	struct:__anon2
+len	list.h	/^  unsigned int len;$/;"	m	struct:__anon2
+list_at	list.c	/^list_at(list_t *self, int index) {$/;"	f
+list_destroy	list.c	/^list_destroy(list_t *self) {$/;"	f
+list_direction_t	list.h	/^} list_direction_t;$/;"	t	typeref:enum:__anon1
+list_find	list.c	/^list_find(list_t *self, void *val) {$/;"	f
+list_iterator_destroy	list_iterator.c	/^list_iterator_destroy(list_iterator_t *self) {$/;"	f
+list_iterator_new	list_iterator.c	/^list_iterator_new(list_t *list, list_direction_t direction) {$/;"	f
+list_iterator_new_from_node	list_iterator.c	/^list_iterator_new_from_node(list_node_t *node, list_direction_t direction) {$/;"	f
+list_iterator_next	list_iterator.c	/^list_iterator_next(list_iterator_t *self) {$/;"	f
+list_iterator_t	list.h	/^} list_iterator_t;$/;"	t	typeref:struct:__anon3
+list_lpop	list.c	/^list_lpop(list_t *self) {$/;"	f
+list_lpush	list.c	/^list_lpush(list_t *self, list_node_t *node) {$/;"	f
+list_new	list.c	/^list_new(void) {$/;"	f
+list_node	list.h	/^typedef struct list_node {$/;"	s
+list_node_new	list_node.c	/^list_node_new(void *val) {$/;"	f
+list_node_t	list.h	/^} list_node_t;$/;"	t	typeref:struct:list_node
+list_remove	list.c	/^list_remove(list_t *self, list_node_t *node) {$/;"	f
+list_rpop	list.c	/^list_rpop(list_t *self) {$/;"	f
+list_rpush	list.c	/^list_rpush(list_t *self, list_node_t *node) {$/;"	f
+list_t	list.h	/^} list_t;$/;"	t	typeref:struct:__anon2
+main	reverse.c	/^int main(int argc, char** argv){$/;"	f
+match	list.h	/^  int (*match)(void *a, void *b);$/;"	m	struct:__anon2
+next	list.h	/^  list_node_t *next;$/;"	m	struct:__anon3
+next	list.h	/^  struct list_node *next;$/;"	m	struct:list_node	typeref:struct:list_node::list_node
+prev	list.h	/^  struct list_node *prev;$/;"	m	struct:list_node	typeref:struct:list_node::list_node
+tail	list.h	/^  list_node_t *tail;$/;"	m	struct:__anon2
+val	list.h	/^  void *val;$/;"	m	struct:list_node
