@@ -31,14 +31,30 @@ char** split(char* line){
     char* token = strtok(line, delimiter);
 
     while (token != NULL) {
-        if (token_count >= max_tokens){
-            max_tokens *= 2;
-            tokens = (char**)realloc(tokens, sizeof(char*) * max_tokens);
+        char * redir = strchr(token, '>');
+        if (redir != NULL) {
+            int pos = redir - token;
+            tokens[token_count] = malloc(sizeof(char) * (pos + 1));
+            strncpy(tokens[token_count], token, pos);
+            token_count ++;
+            if (token_count >= max_tokens){
+                max_tokens += 3;
+                tokens = (char**)realloc(tokens, sizeof(char*) * max_tokens);
+            }
+            tokens[token_count] = (char*)malloc(sizeof(char) * 2);
+            strcpy(tokens[token_count ++], ">");
+            tokens[token_count] = (char*)malloc(sizeof(char) * strlen(redir));
+            strncpy(tokens[token_count ++], redir + 1, strlen(redir));
+        }else {
+            if (token_count >= max_tokens){
+                max_tokens *= 2;
+                tokens = (char**)realloc(tokens, sizeof(char*) * max_tokens);
+            }
+            // Allocate memory for each token and copy it
+            tokens[token_count] = (char*)malloc(sizeof(char) * (strlen(token) + 1));
+            strcpy(tokens[token_count], token);
+            token_count++;
         }
-        // Allocate memory for each token and copy it
-        tokens[token_count] = (char*)malloc(sizeof(char) * (strlen(token) + 1));
-        strcpy(tokens[token_count], token);
-        token_count++;
 
         token = strtok(NULL, delimiter);
     }
@@ -56,12 +72,16 @@ int handle_redirect(char** tokens){
                 PERR;
                 exit(0);
             }
-        }else if(strcmp(*p, ">") == 0)
+        }else if(strcmp(*p, ">") == 0) {
+            //no file
+            if (*(p + 1) == NULL) {PERR; exit(1);}
             flag = 1;
+        }
         p ++;
     }
     if (flag){
         int fd = open(*(p - 1), O_RDWR | O_TRUNC | O_CREAT, S_IRUSR | S_IWUSR);
+        if (fd == -1) {PERR; exit(1);}
         *(p - 1) = NULL;
         *(p - 2) = NULL;
         return fd;
@@ -98,21 +118,16 @@ void run(char** tokens){
         if (fd) {
             stdoutcp = dup(1);
             stderrcp = dup(2);
-            dup2(1, fd);
-            dup2(2, fd);
-            close(1);
-            close(2);
+            if (dup2(fd, 1) == -1) {PERR; exit(1);}
+            if (dup2(fd, 2) == -1) {PERR; exit(1);}
         }
-        int res = execvp(full_path, tokens);
+        execvp(full_path, tokens);
         if (fd) {
-            dup2(stdoutcp, 1);
-            dup2(stderrcp, 2);
+            if (dup2(1, stdoutcp) == -1) {PERR; exit(1);}
+            if (dup2(2, stderrcp) == -1) {PERR; exit(1);}
             close(stdoutcp);
             close(stderrcp);
-        }
-        if (res == -1) {
-            PERR;
-            return;
+            close(fd);
         }
         free(full_path);
     } else
@@ -188,7 +203,7 @@ int main(int argc, char* argv[]){
         free(line);
     } else if (argc == 2) { //batch mode
         FILE *fp = fopen(argv[1], "r");
-        if (fp == NULL) {PERR; return 0;}
+        if (fp == NULL) {PERR; return 1;}
         while ((getline(&line, &len, fp)) != -1)
             handlecmd(line);
         free(fp);

@@ -1,0 +1,1 @@
+A NULL argv[0] was passed through an exec system call.
