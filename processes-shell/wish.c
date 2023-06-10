@@ -3,6 +3,8 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 #include <sys/wait.h>
 #include "common.h"
 
@@ -43,6 +45,30 @@ char** split(char* line){
     return tokens;
 }
 
+//0: no redirect
+int handle_redirect(char** tokens){
+    char**p = tokens;
+    int flag = 0;
+    while (*p != NULL){
+        if (flag == 1){
+            //multiple redirect symbols || multiple files
+            if (strcmp(*p, ">") == 0 || *(p + 1) != NULL){
+                PERR;
+                exit(0);
+            }
+        }else if(strcmp(*p, ">") == 0)
+            flag = 1;
+        p ++;
+    }
+    if (flag){
+        int fd = open(*(p - 1), O_RDWR | O_TRUNC | O_CREAT, S_IRUSR | S_IWUSR);
+        *(p - 1) = NULL;
+        *(p - 2) = NULL;
+        return fd;
+    }
+    return 0;
+}
+
 void run(char** tokens){
     int pid = fork();
     if (pid == -1) {
@@ -67,7 +93,23 @@ void run(char** tokens){
             }
         }
         if (!valid_path) return;
+        int fd = handle_redirect(tokens);
+        int stdoutcp, stderrcp;
+        if (fd) {
+            stdoutcp = dup(1);
+            stderrcp = dup(2);
+            dup2(1, fd);
+            dup2(2, fd);
+            close(1);
+            close(2);
+        }
         int res = execvp(full_path, tokens);
+        if (fd) {
+            dup2(stdoutcp, 1);
+            dup2(stderrcp, 2);
+            close(stdoutcp);
+            close(stderrcp);
+        }
         if (res == -1) {
             PERR;
             return;
@@ -117,11 +159,9 @@ void handlecmd(char* line){
     line[strlen(line) - 1] = '\0';
     tokens = split(line);
     int res = handle_builtin(tokens);
-    if (!paths_len) PERR;
-    if (res && paths_len) run(tokens);
-    // Free the allocated memory
-    for (int i = 0; i < token_count; i++) {
-        free(tokens[i]);
+    if (res) {
+        if (paths_len) run(tokens);
+        else PERR;
     }
 }
 
@@ -143,22 +183,24 @@ int main(int argc, char* argv[]){
             fputs("wish> ", stdout);
             if ((getline(&line, &len, stdin)) == -1)
                 PERR;
-            puts(line);
             handlecmd(line);
         }
         free(line);
     } else if (argc == 2) { //batch mode
-        FILE *fp = fopen(argv[1]);
-        if (fp == -1) {PERR; return;}
+        FILE *fp = fopen(argv[1], "r");
+        if (fp == NULL) {PERR; return 0;}
         while ((getline(&line, &len, fp)) != -1)
             handlecmd(line);
+        free(fp);
         free(line);
     }
-    // Free the allocated memory
-    for (int i = 0; i < max_tokens; i++) {
-        free(tokens[i]);
+    if (tokens != NULL) {
+        // Free the allocated memory
+        for (int i = 0; i < token_count; i++) {
+            free(tokens[i]);
+        }
+        free(tokens);
     }
-    free(tokens);
     //free paths
     for (int i = 0; i < paths_len; i ++)
         free(paths[i]);
