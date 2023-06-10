@@ -1,10 +1,10 @@
 # specify all source files here
-SRCS = kv.c hashmap.c
+SRCS = wish.c 
 # specify target here (name of executable)
-TARG = kv
+TARG = wish
 # specify compiler, compile flags, and needed libs
 CC = gcc
-OPTS = -Wall -g
+OPTS = -Wall -Wextra -g
 # this translates .c files in src list to .o’s
 OBJS = $(SRCS:.c=.o)
 # all is not really needed, but is used to generate the target
