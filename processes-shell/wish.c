@@ -8,9 +8,9 @@
 
 #define PERR fprintf(stderr, "An error has occurred\n")
 
-char **paths;
+char **paths, **tokens;
 int paths_len;
-int token_count;
+int max_tokens, token_count;
 
 char ** split(char* line);
 int handle_redirect(char **tokens);
@@ -21,13 +21,18 @@ void run(char **tokens);
 char** split(char* line){
     const char delimiter[] = " ";
 
+    max_tokens = 8;
     // Allocate memory for an array of char* pointers
-    char** tokens = (char**)malloc(sizeof(char*) * 8);
+    char** tokens = (char**)malloc(sizeof(char*) * max_tokens);
     token_count = 0;
 
     char* token = strtok(line, delimiter);
 
     while (token != NULL) {
+        if (token_count >= max_tokens){
+            max_tokens *= 2;
+            tokens = (char**)realloc(tokens, sizeof(char*) * max_tokens);
+        }
         // Allocate memory for each token and copy it
         tokens[token_count] = (char*)malloc(sizeof(char) * (strlen(token) + 1));
         strcpy(tokens[token_count], token);
@@ -46,7 +51,7 @@ void run(char** tokens){
     }
     if (pid == 0) { //child process
         char* full_path = NULL;
-       // sleep(15);
+        //sleep(15);
         size_t full_path_len;
         int valid_path = 0;
         for (int i = 0; i < paths_len; i ++){
@@ -78,8 +83,7 @@ int handle_builtin(char **tokens){
         if (*(tokens + 1) != NULL){
             PERR;
             return 0;
-        }
-        else
+        } else
             exit(0);
     } else if (strcmp(*tokens, "cd") == 0) {
         //0 or >1 args should be signaled as an error
@@ -99,26 +103,26 @@ int handle_builtin(char **tokens){
         char **p = tokens + 1;
         while (*p++ != NULL) paths_len ++;
 
-        paths = realloc(paths, sizeof(char*) * paths_len);
-        for (int i = 0; i < paths_len; i ++)
+        paths = Malloc(sizeof(char*) * paths_len);
+        for (int i = 0; i < paths_len; i ++) {
             paths[i] = Malloc(sizeof(char) * (strlen(tokens[i + 1]) + 1));
-        memcpy(paths, tokens + 1, sizeof(char*) * paths_len);
+            strcpy(paths[i], tokens[i + 1]);
+        }
         return 0;
     }
     return 1;
 }
 
 void handlecmd(char* line){
-    char** tokens;
     line[strlen(line) - 1] = '\0';
     tokens = split(line);
     int res = handle_builtin(tokens);
+    if (!paths_len) PERR;
     if (res && paths_len) run(tokens);
     // Free the allocated memory
     for (int i = 0; i < token_count; i++) {
         free(tokens[i]);
     }
-    free(tokens);
 }
 
 int main(int argc, char* argv[]){
@@ -139,11 +143,22 @@ int main(int argc, char* argv[]){
             fputs("wish> ", stdout);
             if ((getline(&line, &len, stdin)) == -1)
                 PERR;
+            puts(line);
             handlecmd(line);
         }
         free(line);
     } else if (argc == 2) { //batch mode
+        FILE *fp = fopen(argv[1]);
+        if (fp == -1) {PERR; return;}
+        while ((getline(&line, &len, fp)) != -1)
+            handlecmd(line);
+        free(line);
     }
+    // Free the allocated memory
+    for (int i = 0; i < max_tokens; i++) {
+        free(tokens[i]);
+    }
+    free(tokens);
     //free paths
     for (int i = 0; i < paths_len; i ++)
         free(paths[i]);
