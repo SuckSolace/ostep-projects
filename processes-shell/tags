@@ -1,0 +1,124 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+CC	Makefile	/^CC = gcc$/;"	m
+HASHMAP	hashmap.h	75;"	d
+HASHMAP_ITER	hashmap.h	103;"	d
+HASHMAP_PROBE_NEXT	hashmap.c	25;"	d	file:
+HASHMAP_SIZE_DEFAULT	hashmap.c	21;"	d	file:
+HASHMAP_SIZE_MIN	hashmap.c	20;"	d	file:
+HASHMAP_SIZE_MOD	hashmap.c	22;"	d	file:
+Malloc	common.h	8;"	d
+OBJS	Makefile	/^OBJS = $(SRCS:.c=.o)$/;"	m
+OPTS	Makefile	/^OPTS = -Wall -Wextra -g$/;"	m
+PERR	wish.c	11;"	d	file:
+Pthread_cancel	thread_helper.h	22;"	d
+Pthread_create	thread_helper.h	18;"	d
+Pthread_join	thread_helper.h	20;"	d
+Pthread_mutex_destroy	thread_helper.h	26;"	d
+Pthread_mutex_init	thread_helper.h	23;"	d
+Pthread_mutex_lock	thread_helper.h	24;"	d
+Pthread_mutex_unlock	thread_helper.h	25;"	d
+Pthread_setaffinity_np	thread_helper.h	27;"	d
+SRCS	Makefile	/^SRCS = wish.c $/;"	m
+TARG	Makefile	/^TARG = wish$/;"	m
+Time_GetSeconds	common.h	9;"	d
+__HASHMAP_CONCAT	hashmap.h	28;"	d
+__HASHMAP_CONCAT_2	hashmap.h	27;"	d
+__HASHMAP_FOREACH	hashmap.h	31;"	d
+__HASHMAP_FOREACH_DATA	hashmap.h	51;"	d
+__HASHMAP_FOREACH_DATA_SAFE	hashmap.h	55;"	d
+__HASHMAP_FOREACH_KEY	hashmap.h	42;"	d
+__HASHMAP_FOREACH_KEY_SAFE	hashmap.h	46;"	d
+__HASHMAP_FOREACH_SAFE	hashmap.h	36;"	d
+__HASHMAP_ITER_RESET	hashmap.h	20;"	d
+__HASHMAP_MAKE_UNIQUE	hashmap.h	29;"	d
+__HASHMAP_UNIQUE	hashmap.h	30;"	d
+__common_h__	common.h	2;"	d
+_thread_helper_h	thread_helper.h	2;"	d
+compare	hashmap_base.h	/^    int (*compare)(const void *, const void *);$/;"	m	struct:hashmap_base
+data	hashmap.c	/^    void *data;$/;"	m	struct:hashmap_entry	file:
+handle_builtin	wish.c	/^int handle_builtin(char **tokens){$/;"	f
+handle_error_en	thread_helper.h	11;"	d
+handle_parallel	wish.c	/^void handle_parallel(char* line){$/;"	f
+handle_redirect	wish.c	/^int handle_redirect(char** tokens){$/;"	f
+handlecmd	wish.c	/^void handlecmd(char* line){$/;"	f
+hash	hashmap_base.h	/^    size_t (*hash)(const void *);$/;"	m	struct:hashmap_base
+hashmap_base	hashmap_base.h	/^struct hashmap_base {$/;"	s
+hashmap_base_cleanup	hashmap.c	/^void hashmap_base_cleanup(struct hashmap_base *hb)$/;"	f
+hashmap_base_clear	hashmap.c	/^void hashmap_base_clear(struct hashmap_base *hb)$/;"	f
+hashmap_base_collisions	hashmap.c	/^size_t hashmap_base_collisions(const struct hashmap_base *hb, const void *key)$/;"	f
+hashmap_base_collisions_mean	hashmap.c	/^double hashmap_base_collisions_mean(const struct hashmap_base *hb)$/;"	f
+hashmap_base_collisions_variance	hashmap.c	/^double hashmap_base_collisions_variance(const struct hashmap_base *hb)$/;"	f
+hashmap_base_get	hashmap.c	/^void *hashmap_base_get(const struct hashmap_base *hb, const void *key)$/;"	f
+hashmap_base_init	hashmap.c	/^void hashmap_base_init(struct hashmap_base *hb,$/;"	f
+hashmap_base_iter	hashmap.c	/^struct hashmap_entry *hashmap_base_iter(const struct hashmap_base *hb,$/;"	f
+hashmap_base_iter_get_data	hashmap.c	/^void *hashmap_base_iter_get_data(const struct hashmap_entry *iter)$/;"	f
+hashmap_base_iter_get_key	hashmap.c	/^const void *hashmap_base_iter_get_key(const struct hashmap_entry *iter)$/;"	f
+hashmap_base_iter_next	hashmap.c	/^bool hashmap_base_iter_next(const struct hashmap_base *hb, struct hashmap_entry **iter)$/;"	f
+hashmap_base_iter_remove	hashmap.c	/^bool hashmap_base_iter_remove(struct hashmap_base *hb, struct hashmap_entry **iter)$/;"	f
+hashmap_base_iter_set_data	hashmap.c	/^int hashmap_base_iter_set_data(struct hashmap_entry *iter, void *data)$/;"	f
+hashmap_base_iter_valid	hashmap.c	/^bool hashmap_base_iter_valid(const struct hashmap_base *hb, const struct hashmap_entry *iter)$/;"	f
+hashmap_base_load_factor	hashmap.c	/^double hashmap_base_load_factor(const struct hashmap_base *hb)$/;"	f
+hashmap_base_put	hashmap.c	/^int hashmap_base_put(struct hashmap_base *hb, const void *key, void *data)$/;"	f
+hashmap_base_remove	hashmap.c	/^void *hashmap_base_remove(struct hashmap_base *hb, const void *key)$/;"	f
+hashmap_base_reserve	hashmap.c	/^int hashmap_base_reserve(struct hashmap_base *hb, size_t capacity)$/;"	f
+hashmap_base_reset	hashmap.c	/^void hashmap_base_reset(struct hashmap_base *hb)$/;"	f
+hashmap_base_set_key_alloc_funcs	hashmap.c	/^void hashmap_base_set_key_alloc_funcs(struct hashmap_base *hb,$/;"	f
+hashmap_calc_index	hashmap.c	/^static inline size_t hashmap_calc_index(const struct hashmap_base *hb, const void *key)$/;"	f	file:
+hashmap_calc_table_size	hashmap.c	/^static inline size_t hashmap_calc_table_size(const struct hashmap_base *hb, size_t size)$/;"	f	file:
+hashmap_cleanup	hashmap.h	137;"	d
+hashmap_clear	hashmap.h	232;"	d
+hashmap_collisions	hashmap.h	415;"	d
+hashmap_collisions_mean	hashmap.h	426;"	d
+hashmap_collisions_variance	hashmap.h	436;"	d
+hashmap_entry	hashmap.c	/^struct hashmap_entry {$/;"	s	file:
+hashmap_entry_find	hashmap.c	/^static struct hashmap_entry *hashmap_entry_find(const struct hashmap_base *hb,$/;"	f	file:
+hashmap_entry_get_populated	hashmap.c	/^static struct hashmap_entry *hashmap_entry_get_populated(const struct hashmap_base *hb,$/;"	f	file:
+hashmap_entry_remove	hashmap.c	/^static void hashmap_entry_remove(struct hashmap_base *hb, struct hashmap_entry *removed_entry)$/;"	f	file:
+hashmap_foreach	hashmap.h	326;"	d
+hashmap_foreach_data	hashmap.h	379;"	d
+hashmap_foreach_data_safe	hashmap.h	393;"	d
+hashmap_foreach_key	hashmap.h	353;"	d
+hashmap_foreach_key_safe	hashmap.h	367;"	d
+hashmap_foreach_safe	hashmap.h	341;"	d
+hashmap_free_keys	hashmap.c	/^static void hashmap_free_keys(struct hashmap_base *hb)$/;"	f	file:
+hashmap_get	hashmap.h	203;"	d
+hashmap_hash_default	hashmap.c	/^size_t hashmap_hash_default(const void *data, size_t len)$/;"	f
+hashmap_hash_string	hashmap.c	/^size_t hashmap_hash_string(const char *key)$/;"	f
+hashmap_hash_string_i	hashmap.c	/^size_t hashmap_hash_string_i(const char *key)$/;"	f
+hashmap_init	hashmap.h	125;"	d
+hashmap_iter	hashmap.h	251;"	d
+hashmap_iter_get_data	hashmap.h	301;"	d
+hashmap_iter_get_key	hashmap.h	292;"	d
+hashmap_iter_next	hashmap.h	271;"	d
+hashmap_iter_remove	hashmap.h	283;"	d
+hashmap_iter_set_data	hashmap.h	311;"	d
+hashmap_iter_valid	hashmap.h	260;"	d
+hashmap_load_factor	hashmap.h	402;"	d
+hashmap_put	hashmap.h	188;"	d
+hashmap_rehash	hashmap.c	/^static int hashmap_rehash(struct hashmap_base *hb, size_t table_size)$/;"	f	file:
+hashmap_remove	hashmap.h	221;"	d
+hashmap_reserve	hashmap.h	174;"	d
+hashmap_reset	hashmap.h	241;"	d
+hashmap_set_key_alloc_funcs	hashmap.h	149;"	d
+hashmap_size	hashmap.h	161;"	d
+key	hashmap.c	/^    void *key;$/;"	m	struct:hashmap_entry	file:
+key_dup	hashmap_base.h	/^    void *(*key_dup)(const void *);$/;"	m	struct:hashmap_base
+key_free	hashmap_base.h	/^    void (*key_free)(void *);$/;"	m	struct:hashmap_base
+main	wish.c	/^int main(int argc, char* argv[]){$/;"	f
+max_tokens	wish.c	/^int max_tokens, token_count;$/;"	v
+parallel_split	wish.c	/^char** parallel_split(char* line){$/;"	f
+paths	wish.c	/^char **paths, **tokens;$/;"	v
+paths_len	wish.c	/^int paths_len;$/;"	v
+run	wish.c	/^void run(char** tokens){$/;"	f
+size	hashmap_base.h	/^    size_t size;$/;"	m	struct:hashmap_base
+split	wish.c	/^char** split(char* line){$/;"	f
+table	hashmap_base.h	/^    struct hashmap_entry *table;$/;"	m	struct:hashmap_base	typeref:struct:hashmap_base::hashmap_entry
+table_size	hashmap_base.h	/^    size_t table_size;$/;"	m	struct:hashmap_base
+table_size_init	hashmap_base.h	/^    size_t table_size_init;$/;"	m	struct:hashmap_base
+token_count	wish.c	/^int max_tokens, token_count;$/;"	v
+tokens	wish.c	/^char **paths, **tokens;$/;"	v

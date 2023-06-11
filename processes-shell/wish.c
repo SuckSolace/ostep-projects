@@ -14,36 +14,37 @@ char **paths, **tokens;
 int paths_len;
 int max_tokens, token_count;
 
-char ** split(char* line);
+void handle_parallel(char* line);
+char ** split(char* line, const char delimiter[], int parallel);
 int handle_redirect(char **tokens);
 void handlecmd(char* line);
 int handle_builtin(char** tokens);
-void run(char **tokens);
+void run(char **tokens); //actually run the cmd
 
-char** split(char* line){
-    const char delimiter[] = " ";
 
+char** split(char* line, const char delimiter[], int parallel){
     max_tokens = 8;
     // Allocate memory for an array of char* pointers
-    char** tokens = (char**)malloc(sizeof(char*) * max_tokens);
+    char** tokens = (char**)Malloc(sizeof(char*) * max_tokens);
     token_count = 0;
 
     char* token = strtok(line, delimiter);
 
     while (token != NULL) {
         char * redir = strchr(token, '>');
-        if (redir != NULL) {
+        //possibility that there is no space for redirection symbol
+        if (redir != NULL && !parallel) {
             int pos = redir - token;
-            tokens[token_count] = malloc(sizeof(char) * (pos + 1));
+            tokens[token_count] = Malloc(sizeof(char) * (pos + 1));
             strncpy(tokens[token_count], token, pos);
             token_count ++;
             if (token_count >= max_tokens){
                 max_tokens += 3;
                 tokens = (char**)realloc(tokens, sizeof(char*) * max_tokens);
             }
-            tokens[token_count] = (char*)malloc(sizeof(char) * 2);
+            tokens[token_count] = (char*)Malloc(sizeof(char) * 2);
             strcpy(tokens[token_count ++], ">");
-            tokens[token_count] = (char*)malloc(sizeof(char) * strlen(redir));
+            tokens[token_count] = (char*)Malloc(sizeof(char) * strlen(redir));
             strncpy(tokens[token_count ++], redir + 1, strlen(redir));
         }else {
             if (token_count >= max_tokens){
@@ -51,7 +52,7 @@ char** split(char* line){
                 tokens = (char**)realloc(tokens, sizeof(char*) * max_tokens);
             }
             // Allocate memory for each token and copy it
-            tokens[token_count] = (char*)malloc(sizeof(char) * (strlen(token) + 1));
+            tokens[token_count] = (char*)Malloc(sizeof(char) * (strlen(token) + 1));
             strcpy(tokens[token_count], token);
             token_count++;
         }
@@ -170,13 +171,26 @@ int handle_builtin(char **tokens){
     return 1;
 }
 
+
+void handle_parallel(char* line){
+    char** cmds = split(line, " & ", 1);
+    char** p = cmds;
+    while (*p != NULL)
+        handlecmd((char*)*p++);
+}
+
+
 void handlecmd(char* line){
-    line[strlen(line) - 1] = '\0';
-    tokens = split(line);
-    int res = handle_builtin(tokens);
-    if (res) {
-        if (paths_len) run(tokens);
-        else PERR;
+    if (line[strlen(line) - 1] == '\n')
+        line[strlen(line) - 1] = '\0';
+    if (strchr(line, '&') != NULL) handle_parallel(line);
+    else {
+        tokens = split(line, " ", 0);
+        int res = handle_builtin(tokens);
+        if (res) {
+            if (paths_len) run(tokens);
+            else PERR;
+        }
     }
 }
 
@@ -186,8 +200,8 @@ int main(int argc, char* argv[]){
         exit(1);
     }
     //set search path
-    paths = malloc(sizeof(char*));
-    paths[0] = malloc(sizeof(char) * (strlen("/bin") + 1));
+    paths = Malloc(sizeof(char*));
+    paths[0] = Malloc(sizeof(char) * (strlen("/bin") + 1));
     strcpy(paths[0], "/bin");
     paths_len = 1;
 
