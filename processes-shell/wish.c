@@ -24,6 +24,8 @@ char **paths, **tokens;
 int paths_len;
 int max_tokens, token_count;
 
+
+char* replace_char(char* str, char find, char replace);
 void handle_parallel(char* line);
 char ** split(char* line, const char delimiter[], int parallel);
 int handle_redirect(char **tokens);
@@ -88,7 +90,7 @@ char** split(char* line, const char delimiter[], int parallel){
     for (int i = 0; i < token_count; i ++) free(tokens[i]);
     tokens = realloc(tokens, sizeof(char*) * (token_count + 1));
     memcpy(tokens, p, sizeof(char*) * token_count);
-    max_tokens = token_count;
+    max_tokens = token_count + 1;
     token_count = count;
     free(p);
     return tokens;
@@ -110,6 +112,7 @@ int handle_redirect(char** tokens){
             if (*(p + 1) == NULL) {PERR2(handle_redirect); exit(1);}
             flag = 1;
         }
+
         p ++;
     }
     if (flag){
@@ -214,10 +217,20 @@ void handle_parallel(char* line){
     while ((pid = wait(NULL)) > 0) ;
 }
 
+char* replace_char(char* str, char find, char replace){
+    char *current_pos = strchr(str,find);
+    while (current_pos) {
+        *current_pos = replace;
+         current_pos = strchr(current_pos + 1, find);
+    }
+    return str;
+}
 
 void handlecmd(char* line){
     if (line[strlen(line) - 1] == '\n')
         line[strlen(line) - 1] = '\0';
+    //replace '\t'
+    line = replace_char(line, '\t', ' ');
     if (strchr(line, parallel_symbol_char) != NULL) handle_parallel(line);
     else {
         tokens = split(line, command_delimiter, 0);
