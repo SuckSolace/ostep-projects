@@ -1,0 +1,72 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+CC	Makefile	/^CC = gcc$/;"	m
+CFLAGS	Makefile	/^CFLAGS = -Wall$/;"	m
+MAXBUF	request.c	9;"	d	file:
+MAXBUF	spin.c	8;"	d	file:
+MAXBUF	wclient.c	24;"	d	file:
+Malloc	common.h	8;"	d
+OBJS	Makefile	/^OBJS = wserver.o wclient.o request.o io_helper.o $/;"	m
+Pthread_cancel	thread_helper.h	22;"	d
+Pthread_create	thread_helper.h	18;"	d
+Pthread_join	thread_helper.h	20;"	d
+Pthread_mutex_destroy	thread_helper.h	26;"	d
+Pthread_mutex_init	thread_helper.h	23;"	d
+Pthread_mutex_lock	thread_helper.h	24;"	d
+Pthread_mutex_unlock	thread_helper.h	25;"	d
+Pthread_setaffinity_np	thread_helper.h	27;"	d
+Time_GetSeconds	common.h	9;"	d
+__IO_HELPER__	io_helper.h	2;"	d
+__common_h__	common.h	2;"	d
+_thread_helper_h	thread_helper.h	2;"	d
+accept_or_die	io_helper.h	73;"	d
+bind_or_die	io_helper.h	69;"	d
+chdir_or_die	io_helper.h	41;"	d
+client_print	wclient.c	/^void client_print(int fd) {$/;"	f
+client_send	wclient.c	/^void client_send(int fd, char *filename) {$/;"	f
+close_or_die	io_helper.h	51;"	d
+connect_or_die	io_helper.h	75;"	d
+default_root	wserver.c	/^char default_root[] = ".";$/;"	v
+dup2_or_die	io_helper.h	55;"	d
+execve_or_die	io_helper.h	33;"	d
+fork_or_die	io_helper.h	31;"	d
+fstat_or_die	io_helper.h	59;"	d
+get_seconds	spin.c	/^double get_seconds() {$/;"	f
+gethostbyaddr_or_die	io_helper.h	79;"	d
+gethostbyname_or_die	io_helper.h	77;"	d
+gethostname_or_die	io_helper.h	37;"	d
+handle_error_en	thread_helper.h	11;"	d
+listen_or_die	io_helper.h	71;"	d
+lseek_or_die	io_helper.h	49;"	d
+main	spin.c	/^int main(int argc, char *argv[]) {$/;"	f
+main	wclient.c	/^int main(int argc, char *argv[]) {$/;"	f
+main	wserver.c	/^int main(int argc, char *argv[]) {$/;"	f
+mmap_or_die	io_helper.h	61;"	d
+munmap_or_die	io_helper.h	63;"	d
+open_client_fd	io_helper.c	/^int open_client_fd(char *hostname, int port) {$/;"	f
+open_client_fd_or_die	io_helper.h	90;"	d
+open_listen_fd	io_helper.c	/^int open_listen_fd(int port) {$/;"	f
+open_listen_fd_or_die	io_helper.h	92;"	d
+open_or_die	io_helper.h	43;"	d
+read_or_die	io_helper.h	45;"	d
+readline	io_helper.c	/^ssize_t readline(int fd, void *buf, size_t maxlen) {$/;"	f
+readline_or_die	io_helper.h	88;"	d
+request_error	request.c	/^void request_error(int fd, char *cause, char *errnum, char *shortmsg, char *longmsg) {$/;"	f
+request_get_filetype	request.c	/^void request_get_filetype(char *filename, char *filetype) {$/;"	f
+request_handle	request.c	/^void request_handle(int fd) {$/;"	f
+request_parse_uri	request.c	/^int request_parse_uri(char *uri, char *filename, char *cgiargs) {$/;"	f
+request_read_headers	request.c	/^void request_read_headers(int fd) {$/;"	f
+request_serve_dynamic	request.c	/^void request_serve_dynamic(int fd, char *filename, char *cgiargs) {$/;"	f
+request_serve_static	request.c	/^void request_serve_static(int fd, char *filename, int filesize) {$/;"	f
+select_or_die	io_helper.h	53;"	d
+setenv_or_die	io_helper.h	39;"	d
+setsockopt_or_die	io_helper.h	67;"	d
+sockaddr_t	io_helper.h	/^typedef struct sockaddr sockaddr_t;$/;"	t	typeref:struct:sockaddr
+socket_or_die	io_helper.h	65;"	d
+stat_or_die	io_helper.h	57;"	d
+wait_or_die	io_helper.h	35;"	d
+write_or_die	io_helper.h	47;"	d
