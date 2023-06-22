@@ -12,7 +12,8 @@ num=$1
 for ((i=1; i<=num; i++))
 do
   echo "Loop $i"
-  ./wclient localhost 10000 "/spin.cgi?2" &
+  ./wclient localhost 10000 "/io_helper.c" &
+  ./wclient localhost 10000 "/common.h" &
 done
 
 wait
