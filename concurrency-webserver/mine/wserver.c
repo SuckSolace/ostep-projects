@@ -10,6 +10,7 @@ char default_root[] = ".";
 sem_t empty, fill, mutex;
 int use = 0, prod = 0, count = 0;
 FILE* logfd;
+char* cur_schedalg;
 
 typedef struct _pthread_args {
     fd_inf* buf;
@@ -19,7 +20,10 @@ typedef struct _pthread_args {
 
 void put(fd_inf* val, fd_inf buf[], int tot){
     buf[prod] = *val;
-    prod = (prod + 1) % tot;
+    if (strcmp(cur_schedalg, "FIFO") == 0)
+        prod = (prod + 1) % tot;
+    else if (strcmp(cur_schedalg, "SFF") == 0)
+        prod ++;
 }
 
 void get(fd_inf buf[], int tot, fd_inf *ff){
@@ -27,10 +31,9 @@ void get(fd_inf buf[], int tot, fd_inf *ff){
     use = (use + 1) % tot;
 }
 
-void sffget(fd_inf buf[], int tot, fd_inf *ff){
+void sffget(fd_inf buf[], fd_inf *ff){
     off_t minsz = buf[0].file_sz;
     int minidx = 0;
-    printf("prod: %d\n", prod);
     for (int i = 1; i < prod; i++){
         if (minsz >= buf[i].file_sz){
             minsz = buf[i].file_sz;
@@ -46,10 +49,10 @@ void sffget(fd_inf buf[], int tot, fd_inf *ff){
     strcpy(ff->cgiargs, buf[minidx].cgiargs);
     ff->sbuf = malloc(sizeof(struct stat));
     memcpy(ff->sbuf, buf[minidx].sbuf, sizeof(struct stat));
-    printf("filename: %s fd: %d addr: %p\n", ff->filename, ff->fd, ff);
+    //printf("filename: %s fd: %d addr: %p\n", ff->filename, ff->fd, ff);
     for (int i = minidx + 1; i < prod; i ++ )
         memcpy(&buf[i - 1], &buf[i], sizeof(fd_inf));
-    prod = (prod - 1 + tot) % tot;
+    prod --;
 }
 
 void getfilesize(int fd, fd_inf * fif){
@@ -102,21 +105,19 @@ void* consumer(void * args){
         Sem_wait(&fill);
         Sem_wait(&mutex);
         fd_inf* tmp = malloc(sizeof(fd_inf));
-        printf("p: %p\n", tmp);
         if (strcmp(schedalg, "FIFO") == 0)
             get(buf, tot, tmp);
         else if(strcmp(schedalg, "SFF") == 0){
-            sffget(buf, tot, tmp);
+            sffget(buf, tmp);
         }
-        //printf("filename: %s\n", tmp->filename);
         logfd = fopen("log", "a+");
-        fprintf(logfd, "pid: %lu\n", pthread_self());
+        fprintf(logfd, "pid: %lu filename: %s\n", pthread_self(), tmp->filename);
         fclose(logfd);
         Sem_post(&mutex);
+        Sem_post(&empty);
         request_handle(tmp);
         close_or_die(tmp->fd);
         free_fd_inf(tmp);
-        Sem_post(&empty);
     }
 }
 
@@ -168,6 +169,8 @@ int main(int argc, char *argv[]) {
     args.tot = buffers;
     args.schedalg = schedalg;
 
+    cur_schedalg = malloc(sizeof(char) * 5);
+    strcpy(cur_schedalg, schedalg);
 
     for (int i = 0; i < threads; i ++)
         Pthread_create(&workers[i], NULL, &consumer, &args);
@@ -193,6 +196,7 @@ int main(int argc, char *argv[]) {
     }
     //free resources
     free(schedalg);
+    free(cur_schedalg);
     sem_close(&empty);
     sem_close(&fill);
     sem_close(&mutex);
